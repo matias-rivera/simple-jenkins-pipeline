@@ -9,10 +9,17 @@ pipeline {
                 echo 'Building...'
                 sh 'mvn -B -DskipTests clean package'
             }
+            post {
+                success {
+                    archiveArtifacts 'target/*.jar'
+                    stash(name: 'app', includes: 'target/**')
+                }
+            }
         }
         stage('Test') {
             steps {
                 echo 'Testing...'
+                unstash 'app'
                 sh 'mvn test'
             }
             post {
@@ -32,6 +39,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
+                unstash 'app'
                 sh 'chmod +x scripts/deploy.sh'
                 sh './scripts/deploy.sh'
             }
