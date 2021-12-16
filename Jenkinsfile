@@ -21,7 +21,15 @@ pipeline {
                 }
             }
         }
-        stage('Deliver') {
+        stage('Confirm Deploy'){
+            when {
+                branch 'master'
+            }
+            steps{
+                input(message: 'Okay to Deploy?', ok: 'Yes, let\'s do it!')
+            }
+        }
+        stage('Deploy') {
             steps {
                 echo 'Deploying...'
                 sh 'chmod +x scripts/deploy.sh'
